@@ -247,9 +247,9 @@ function todo-target-delete() {
     local todoListFile="$folder/$targetListName"
     local target=$(<"$targetFile")
 
-    if [ "$targetListName" == "$TARGET_FILE_NAME" ]
+    if [ "$targetListName" == "$TARGET_FILE_NAME" ] || [ "$targetListName" == "$TODO_FILE_NAME" ]
     then
-        echo "Not allowed to delete '$TARGET_FILE_NAME'"
+        echo "Not allowed to delete '$targetListName'"
         exit 1
     fi
 
