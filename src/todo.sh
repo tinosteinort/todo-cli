@@ -254,7 +254,6 @@ function todo-target-select() {
 function todo-target-list() {
     local folder
     folder=$(findToDoListFolder)
-    echo "Folder: $folder"
 
     local files
     files=(${folder}/*)
