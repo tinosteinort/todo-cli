@@ -2,7 +2,6 @@
 
 set -e
 
-SCRIPT_DIR="$(cd `dirname $0` && pwd)"
 CURRENT_DIR=$(pwd)
 
 command="todo-$1"
@@ -35,13 +34,16 @@ function alreadyToDoList() {
 }
 
 function noToDoList() {
-    echo "This place is not a part of a TODO list"
+    echo "This place is not a part of a TODO list or the target TODO list does not exist"
     exit 1
 }
 
 function todo-init() {
-    local todoListFile="$TODO_FOLDER_NAME/$TODO_FILE_NAME"
-    local targetFile="$TODO_FOLDER_NAME/$TARGET_FILE_NAME"
+    local todoListFile
+    todoListFile="$TODO_FOLDER_NAME/$TODO_FILE_NAME"
+
+    local targetFile
+    targetFile="$TODO_FOLDER_NAME/$TARGET_FILE_NAME"
 
     if [ -d "$TODO_FOLDER_NAME" ]
     then
@@ -59,7 +61,9 @@ function todo-init() {
 }
 
 function findToDoFolder() {
-    local folder=$1
+    local folder
+    folder=$1
+
     cd "$folder"
 
     if [ -d "$TODO_FOLDER_NAME" ]
@@ -71,29 +75,47 @@ function findToDoFolder() {
             echo "Folder not found"
             exit 1
         fi
-        findToDoFolder $(dirname "$folder")
+        findToDoFolder "$(dirname "$folder")"
     fi
 }
 
 function findToDoListFolder() {
     cd "$CURRENT_DIR"
-    local todoFolder=$(findToDoFolder "$CURRENT_DIR")
+
+    local todoFolder
+    todoFolder="$(findToDoFolder "$CURRENT_DIR")"
+
     cd "$CURRENT_DIR"
     echo "$todoFolder"
 }
 
 function toDoFile() {
-    local folder=$(findToDoListFolder)
-    local targetFile="$folder/$TARGET_FILE_NAME"
-    local target=$(<"$targetFile")
+    local folder
+    folder=$(findToDoListFolder)
 
-    echo "$folder/$target"
+    local targetFile
+    targetFile="$folder/$TARGET_FILE_NAME"
+
+    local target
+    target=$(<"$targetFile")
+
+    local todoFile
+    todoFile="$folder/$target"
+
+    if [ -z "$target" ] || [ ! -e "$todoFile" ]
+    then
+        echo ""
+    fi
+
+    echo "$todoFile"
 }
 
 function todo-add() {
-    local allCommandParams="$@"
+    local allCommandParams
+    allCommandParams="$*"
 
-    local todoListFile=$(toDoFile)
+    local todoListFile
+    todoListFile=$(toDoFile)
 
     if [ -e "$todoListFile" ]
     then
@@ -104,18 +126,20 @@ function todo-add() {
 }
 
 function todo-list() {
-    local type=$1
+    local type
+    type=$1
 
-    local todoListFile=$(toDoFile)
-
-    local todoDir=$(dirname "$todoListFile")
-    local targetName=$(<"$todoDir/$TARGET_FILE_NAME")
-    echo "Target TODO list: $targetName"
+    local todoListFile
+    todoListFile=$(toDoFile)
 
     if [ -e "$todoListFile" ]
     then
-        local lineNumber=0
-        cat "$todoListFile" | while read line
+        echo "Target TODO list: $(basename "$todoListFile")"
+
+        local lineNumber
+        lineNumber=0
+
+        while read line
         do
             if [ "${line:0:3}" == '[ ]' ] && [ "$type" == "open" ]
             then
@@ -130,23 +154,30 @@ function todo-list() {
                 lineNumber=$(($lineNumber+1))
                 echo "$lineNumber: $line"
             fi
-        done
+        done < "$todoListFile"
     else
         noToDoList
     fi
 }
 
 function transform() {
-    local command=$1
-    local taskNumber=$2
+    local command
+    command=$1
 
-    local todoListFile=$(toDoFile)
-    local todoListFileTemp="$todoListFile.temp"
+    local taskNumber
+    taskNumber=$2
+
+    local todoListFile
+    todoListFile=$(toDoFile)
+
+    local todoListFileTemp
+    todoListFileTemp="$todoListFile.temp"
 
     if [ -e "$todoListFile" ]
     then
-        local lineNumber=1
-        cat "$todoListFile" | while read line
+        local lineNumber
+        lineNumber=1
+        while read line
         do
             if [ "$taskNumber" == "$lineNumber" ] && [ "${line:0:3}" == '[ ]' ] && [ "$command" == "check" ]
             then
@@ -163,7 +194,7 @@ function transform() {
                 echo "$line" >> "$todoListFileTemp"
                 lineNumber=$(($lineNumber+1))
             fi
-        done
+        done < "$todoListFile"
 
         rm "$todoListFile"
         mv "$todoListFileTemp" "$todoListFile"
@@ -173,25 +204,38 @@ function transform() {
 }
 
 function todo-check() {
-    local taskNumber=$1
+    local taskNumber
+    taskNumber=$1
+
     transform "check" "$taskNumber"
 }
 
 function todo-uncheck() {
-    local taskNumber=$1
+    local taskNumber
+    taskNumber=$1
+
     transform "uncheck" "$taskNumber"
 }
 
 function todo-remove() {
-    local taskNumber=$1
+    local taskNumber
+    taskNumber=$1
+
     transform "remove" "$taskNumber"
 }
 
 function todo-target-select() {
-    local targetListName=$1
-    local folder=$(findToDoListFolder)
-    local targetFile="$folder/$TARGET_FILE_NAME"
-    local todoListFile="$folder/$targetListName"
+    local targetListName
+    targetListName=$1
+
+    local folder
+    folder=$(findToDoListFolder)
+
+    local targetFile
+    targetFile="$folder/$TARGET_FILE_NAME"
+
+    local todoListFile
+    todoListFile="$folder/$targetListName"
 
 
     if [ "$targetListName" == "$TARGET_FILE_NAME" ]
@@ -208,19 +252,32 @@ function todo-target-select() {
 }
 
 function todo-target-list() {
-    local folder=$(findToDoListFolder)
-    local files=("$folder/*")
-    for f in ${files[@]};
+    local folder
+    folder=$(findToDoListFolder)
+    echo "Folder: $folder"
+
+    local files
+    files=(${folder}/*)
+
+    for f in "${files[@]}";
     do
         echo $(basename "$f")
     done
 }
 
 function todo-target-create() {
-    local targetListName=$1
-    local folder=$(findToDoListFolder)
-    local targetFile="$folder/$TARGET_FILE_NAME"
-    local todoListFile="$folder/$targetListName"
+    local targetListName
+    targetListName=$1
+
+    local folder
+    folder=$(findToDoListFolder)
+
+    local targetFile
+    targetFile="$folder/$TARGET_FILE_NAME"
+
+    local todoListFile
+    todoListFile="$folder/$targetListName"
+
 
     if [ "$targetListName" == "$TARGET_FILE_NAME" ]
     then
@@ -241,11 +298,20 @@ function todo-target-create() {
 }
 
 function todo-target-delete() {
-    local targetListName=$1
-    local folder=$(findToDoListFolder)
-    local targetFile="$folder/$TARGET_FILE_NAME"
-    local todoListFile="$folder/$targetListName"
-    local target=$(<"$targetFile")
+    local targetListName
+    targetListName=$1
+
+    local folder
+    folder=$(findToDoListFolder)
+
+    local targetFile
+    targetFile="$folder/$TARGET_FILE_NAME"
+
+    local todoListFile
+    todoListFile="$folder/$targetListName"
+
+    local target
+    target=$(<"$targetFile")
 
     if [ "$targetListName" == "$TARGET_FILE_NAME" ] || [ "$targetListName" == "$TODO_FILE_NAME" ]
     then
@@ -258,15 +324,19 @@ function todo-target-delete() {
         rm "$todoListFile"
     fi
 
-    if [ "$targetListName" == "$target"  ]
+    if [ "$targetListName" == "$target" ]
     then
-        echo "$TODO_FILE_NAME" > "$targetFile"
+        echo "" > "$targetFile"
     fi
 }
 
 function functionNameExist() {
-    local functionName=$1
-    local typeOfFunction=`type -t "$functionName"`
+    local functionName
+    functionName=$1
+
+    local typeOfFunction
+    typeOfFunction=`type -t "$functionName"`
+
     if [ "$typeOfFunction" = "function" ]; then
         echo true
     else
@@ -275,7 +345,10 @@ function functionNameExist() {
 }
 
 function todo-target() {
+    local targetCommand
     targetCommand="todo-target-$1"
+
+    local targetCommandParams
     targetCommandParams="${@:2}"
 
     targetFunctionExist=$(functionNameExist "$command")
