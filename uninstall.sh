@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+set -e
+
+EXECUTABLE_SCRIPT_NAME="todo"
+COMPLETION_SCRIPT_NAME="todo-completion.bash"
+
+EXECUTABLE_SCRIPT="$HOME/bin/$EXECUTABLE_SCRIPT_NAME"
+TARGET_COMPLETION_SCRIPT="/etc/bash_completion.d/$COMPLETION_SCRIPT_NAME"
+
+
+if [ -f "$EXECUTABLE_SCRIPT" ]
+then
+    echo "remove $EXECUTABLE_SCRIPT"
+    rm "$EXECUTABLE_SCRIPT"
+fi
+
+if [ -f "$TARGET_COMPLETION_SCRIPT" ]
+then
+    echo "remove $TARGET_COMPLETION_SCRIPT"
+    rm "$TARGET_COMPLETION_SCRIPT"
+fi
