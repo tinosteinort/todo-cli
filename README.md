@@ -2,12 +2,15 @@
 
 A tool to manage multiple TODO lists via a CLI.
 
+![Example Image](example.png)
+
+The TODO lists are saved as plain text files, one file per TODO list.
 
 ## Build and installation
 ```
 ./build.sh && sudo ./install.sh
 ```
-For the installation `sudo` is needed, because for the bash autocompletion the 
+For the installation `sudo` is needed, because the bash autocompletion the 
  folder `/etc/bash_completion.d` must be writable.
 
 
