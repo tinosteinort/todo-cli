@@ -199,6 +199,11 @@ function transform() {
             fi
         done < "$todoListFile"
 
+        if [ ! -f "$todoListFileTemp" ]
+        then
+            touch "$todoListFileTemp"
+        fi
+
         rm "$todoListFile"
         mv "$todoListFileTemp" "$todoListFile"
     else
