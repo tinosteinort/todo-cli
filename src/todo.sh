@@ -34,7 +34,7 @@ function alreadyToDoList() {
 }
 
 function noToDoList() {
-    echo "This place is not a part of a TODO list or the target TODO list does not exist"
+    echo "This place is not part of a TODO list or the target TODO list does not exist"
     exit 1
 }
 
@@ -96,8 +96,11 @@ function toDoFile() {
     local targetFile
     targetFile="$folder/$TARGET_FILE_NAME"
 
-    local target
-    target=$(<"$targetFile")
+    if [ -f "$targetFile" ]
+    then
+        local target
+        target=$(<"$targetFile")
+    fi
 
     local todoFile
     todoFile="$folder/$target"
