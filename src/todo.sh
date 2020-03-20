@@ -14,6 +14,7 @@ TARGET_FILE_NAME='.target'
 function todo-help() {
     echo 'usage: todo <command> [<subcommand>] [<args>]'
     echo ''
+    echo 'commands:'
     echo '  init                               Initialise a new TODO list in the current folder'
     echo '  list [all|open|checked]            Shows all tasks'
     echo '  add <task description>             Add a new task to the list'

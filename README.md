@@ -5,8 +5,10 @@ A tool to manage multiple TODO lists via a CLI.
 
 ## Build and installation
 ```
-./build.sh && ./install.sh
+./build.sh && sudo ./install.sh
 ```
+For the installation `sudo` is needed, because for the bash autocompletion the 
+ folder `/etc/bash_completion.d` must be writable.
 
 
 ## Managing TODO entries
@@ -22,10 +24,10 @@ A tool to manage multiple TODO lists via a CLI.
 * ### Add a point to the current TODO list
     ```
     todo add "clean the house"
-    todo add "buy things
+    todo add "buy all the things
     ```
 
-* ### Show all available tasks
+* ### Show all tasks
     ```
     todo list
     ```
@@ -37,6 +39,12 @@ A tool to manage multiple TODO lists via a CLI.
     todo check 2
     ```
     Checks the task with the number `2`.
+    
+* ### Unheck a task
+    ```
+    todo uncheck 1
+    ```
+    Unchecks the task with the number `1`.
     
 * ### Remove a task
     ```
