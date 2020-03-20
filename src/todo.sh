@@ -12,7 +12,7 @@ TODO_FILE_NAME='todo'
 TARGET_FILE_NAME='.target'
 
 function todo-help() {
-    echo 'usage: todo <command> [<args>]'
+    echo 'usage: todo <command> [<subcommand>] [<args>]'
     echo ''
     echo '  init                               Initialise a new TODO list in the current folder'
     echo '  list [all|open|checked]            Shows all tasks'
